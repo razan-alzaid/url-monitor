@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>URL Monitor</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f5f7fa;
+    text-align: center;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+input {
+    padding: 10px;
+    width: 300px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+table {
+    margin: 20px auto;
+    width: 80%;
+    background: white;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #4CAF50;
+    color: white;
+}
+
+.ok {
+    color: green;
+    font-weight: bold;
+}
+
+.down {
+    color: red;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🌐 URL Monitor Dashboard</h2>
+
+<input id="urlInput" placeholder="Enter URL">
+<button onclick="addUrl()">➕ Add</button>
+
+<table>
+<tr>
+<th>URL</th>
+<th>Status</th>
+<th>Response Time</th>
+</tr>
+<tbody id="tableBody"></tbody>
+</table>
+
+<script>
+async function addUrl() {
+    const url = document.getElementById("urlInput").value;
+
+    await fetch("/add", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ url: url })
+    });
+
+    document.getElementById("urlInput").value = "";
+
+    setTimeout(loadUrls, 2000);
+}
+
+async function loadUrls() {
+    const res = await fetch("/urls");
+    const data = await res.json();
+
+    const table = document.getElementById("tableBody");
+    table.innerHTML = "";
+
+    data.forEach(item => {
+        let statusClass = item.status === 200 ? "ok" : "down";
+
+        table.innerHTML += `
+        <tr>
+            <td>${item.url}</td>
+            <td class="${statusClass}">${item.status}</td>
+            <td>${item.response_time ?? "-"}</td>
+        </tr>`;
+    });
+}
+
+setInterval(loadUrls, 5000);
+loadUrls();
+</script>
+
+</body>
+</html>

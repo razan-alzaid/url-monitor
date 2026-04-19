@@ -3,22 +3,26 @@ services:
     build: ./api
     ports:
       - "5000:5000"
-    env_file:
-      - .env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/
     depends_on:
       - mongo
-    restart: always
 
   worker:
     build: ./worker
-    env_file:
-      - .env
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/
     depends_on:
       - mongo
-    restart: always
 
   mongo:
     image: mongo
     ports:
-      - "27018:27017"
-    restart: always
+      - "27017:27017"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
