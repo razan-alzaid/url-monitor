@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
-from flask_cors import CORS
 import os
 
 app = Flask(__name__)
-CORS(app)
 
 client = MongoClient(os.environ.get("MONGO_URI"))
 db = client.monitor
@@ -12,7 +10,7 @@ collection = db.urls
 
 @app.route("/")
 def home():
-    return "API running 🚀"
+    return jsonify({"message": "API is running"})
 
 @app.route("/add", methods=["POST"])
 def add_url():
