@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 import os
 
@@ -8,9 +8,10 @@ client = MongoClient(os.environ.get("MONGO_URI"))
 db = client.monitor
 collection = db.urls
 
+# 👇 هذا هو الداشبورد الآن
 @app.route("/")
-def home():
-    return "API running 🚀"
+def dashboard():
+    return render_template("dashboard.html")
 
 @app.route("/add", methods=["POST"])
 def add_url():
